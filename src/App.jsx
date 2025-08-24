@@ -97,11 +97,33 @@ const styles = {
   h1: { margin: "0 0 16px" },
   toolbar: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8 },
   toolbarText: { fontSize: 14, color: "#374151" },
-  btnMini: { padding: "6px 10px", borderRadius: 8, border: "1px solid #d1d5db", background: "#f3f4f6", fontWeight: 700 },
+  btnMini: { 
+    padding: "6px 10px", 
+    borderRadius: 8, 
+    border: "1px solid #d1d5db", 
+    background: "#f3f4f6", 
+    fontWeight: 700,
+    color: "#111827"          // 👉 texto oscuro visible
+  },
   viewerWrap: { border: "1px solid #e5e7eb", borderRadius: 12, overflow: "hidden", padding: 8, display: "grid", placeItems: "center" },
   loading: { padding: 16, color: "#6b7280", fontSize: 14 },
   audioRow: { marginTop: 12, display: "grid", gap: 8 },
   actions: { marginTop: 16 },
-  btn: { display: "inline-block", padding: "10px 14px", borderRadius: 10, background: "#111827", color: "#fff", textDecoration: "none", fontWeight: 700 },
-  btnSecondary: { padding: "8px 12px", borderRadius: 10, background: "#e5e7eb", border: "1px solid #d1d5db", fontWeight: 700 }
+  btn: { 
+    display: "inline-block", 
+    padding: "10px 14px", 
+    borderRadius: 10, 
+    background: "#111827", 
+    color: "#ffffff",         // 👉 texto blanco sobre fondo oscuro
+    textDecoration: "none", 
+    fontWeight: 700 
+  },
+  btnSecondary: { 
+    padding: "8px 12px", 
+    borderRadius: 10, 
+    background: "#e5e7eb", 
+    border: "1px solid #d1d5db", 
+    fontWeight: 700,
+    color: "#111827"          // 👉 texto oscuro sobre fondo claro
+  },
 };
