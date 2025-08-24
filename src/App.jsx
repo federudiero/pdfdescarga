@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import audioUrl from "./audio.mp3";
 
 export default function App() {
-  const pdfUrl = `${window.location.origin}/material.pdf`; // tu PDF público en Vercel
+  const pdfUrl = `${window.location.origin}/material.pdf`;
   const viewer = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}#zoom=page-width`;
 
   const audioRef = useRef(null);
@@ -11,32 +11,24 @@ export default function App() {
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
-    a.muted = true; // autoplay permitido solo en mute
+    a.muted = true;
     a.autoplay = true;
     a.play().catch(() => {});
   }, []);
-
-  const enableSound = async () => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.muted = false;
-    try { await a.play(); setSoundOn(true); } catch {}
-  };
 
   return (
     <div style={styles.page}>
       <h1 style={styles.h1}>Material de la clase</h1>
 
+      {/* 👉 EL IFRAME DEBE IR AL VISOR, NO AL PDF */}
       <div style={styles.viewerWrap}>
         <iframe title="PDF" src={viewer} style={styles.viewer} />
       </div>
 
       <div style={styles.audioRow}>
-        <audio ref={audioRef} controls src={audioUrl} style={{ width: "100%" }}>
-          Tu navegador no soporta la etiqueta <code>audio</code>.
-        </audio>
+        <audio ref={audioRef} controls src={audioUrl} style={{ width: "100%" }} />
         {!soundOn && (
-          <button onClick={enableSound} style={styles.btnSecondary}>
+          <button onClick={() => { audioRef.current.muted = false; audioRef.current.play(); setSoundOn(true); }} style={styles.btnSecondary}>
             🔊 Activar sonido
           </button>
         )}
@@ -44,7 +36,9 @@ export default function App() {
 
       <div style={styles.actions}>
         <a href="/material-dl.pdf" style={styles.btn}>Descargar PDF</a>
-        
+        <a href="/material.pdf" target="_blank" rel="noopener" style={{...styles.btnSecondary, marginLeft: 8}}>
+          Abrir en pestaña nueva
+        </a>
       </div>
     </div>
   );
