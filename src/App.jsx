@@ -2,14 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import audioUrl from "./audio.mp3";
 
 export default function App() {
+  const pdfUrl = `${window.location.origin}/material.pdf`; // tu PDF público en Vercel
+  const viewer = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}#zoom=page-width`;
+
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
   useEffect(() => {
-    // Autoplay permitido solo en mute por políticas del navegador
     const a = audioRef.current;
     if (!a) return;
-    a.muted = true;
+    a.muted = true; // autoplay permitido solo en mute
     a.autoplay = true;
     a.play().catch(() => {});
   }, []);
@@ -26,7 +28,7 @@ export default function App() {
       <h1 style={styles.h1}>Material de la clase</h1>
 
       <div style={styles.viewerWrap}>
-        <iframe title="PDF" src="/material.pdf#view=FitH" style={styles.viewer} />
+        <iframe title="PDF" src={viewer} style={styles.viewer} />
       </div>
 
       <div style={styles.audioRow}>
@@ -42,6 +44,7 @@ export default function App() {
 
       <div style={styles.actions}>
         <a href="/material-dl.pdf" style={styles.btn}>Descargar PDF</a>
+        
       </div>
     </div>
   );
