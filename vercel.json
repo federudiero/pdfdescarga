@@ -1,7 +1,4 @@
 {
-  "redirects": [
-    { "source": "/", "destination": "/ver", "permanent": false }
-  ],
   "headers": [
     {
       "source": "/material-dl.pdf",
