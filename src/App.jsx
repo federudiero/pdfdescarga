@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import audioUrl from "./audio.mp3";
+import filePdf from "./material.pdf";
+import filePdfDL from "./material-dl.pdf";
 
 export default function App() {
-  const pdfUrl = `${window.location.origin}/material.pdf`;
+  const absPdf = new URL(filePdf, window.location.origin).toString();
   // visor de Mozilla con cache-bust, página 1 y ancho de página
-  const viewer = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(
-    pdfUrl
-  )}#page=1&zoom=page-width&v=${Date.now()}`;
+  const viewer  = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(absPdf)}#page=1&zoom=page-width&v=${Date.now()}`;
 
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
