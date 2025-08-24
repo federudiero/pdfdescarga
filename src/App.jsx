@@ -1,12 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+import "pdfjs-dist/web/pdf_viewer.css";
+
+// ✅ Worker para Vite: lo importamos como Web Worker y lo registramos
+import workerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+
+// ⬇️ Elige UNA de las dos formas:
+
+// A) PDF dentro de src/ (Vite lo empaqueta y devuelve una URL)
+import pdfFile from "./material.pdf";
+
+// B) Si lo dejas en public/material.pdf, usa:
+// const pdfFile = "/material.pdf";
+
 import audioUrl from "./audio.mp3";
-import filePdf from "./material.pdf";
-import filePdfDL from "./material-dl.pdf";
 
 export default function App() {
-  const absPdf = new URL(filePdf, window.location.origin).toString();
-  // visor de Mozilla con cache-bust, página 1 y ancho de página
-  const viewer  = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(absPdf)}#page=1&zoom=page-width&v=${Date.now()}`;
+  const [numPages, setNumPages] = useState(null);
+  const [page, setPage] = useState(1);
+  const [scale, setScale] = useState(1.2);
 
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
@@ -14,40 +27,66 @@ export default function App() {
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
-    a.muted = true;   // autoplay sólo en mute
+    a.muted = true; // autoplay permitido solo en mute
     a.autoplay = true;
     a.play().catch(() => {});
   }, []);
-
-  const enableSound = async () => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.muted = false;
-    try { await a.play(); setSoundOn(true); } catch {}
-  };
 
   return (
     <div style={styles.page}>
       <h1 style={styles.h1}>Material de la clase</h1>
 
+      <div style={styles.toolbar}>
+        <button style={styles.btnMini} onClick={() => setScale(s => Math.max(0.5, s - 0.1))}>−</button>
+        <span style={styles.toolbarText}>Zoom</span>
+        <button style={styles.btnMini} onClick={() => setScale(s => Math.min(3, s + 0.1))}>＋</button>
+
+        <div style={{ width: 16 }} />
+
+        <button style={styles.btnMini} disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹</button>
+        <span style={styles.toolbarText}>{page} / {numPages ?? "…"}</span>
+        <button style={styles.btnMini} disabled={!numPages || page >= numPages} onClick={() => setPage(p => p + 1)}>›</button>
+      </div>
+
       <div style={styles.viewerWrap}>
-        <iframe title="PDF" src={viewer} style={styles.viewer} />
+        <Document
+          file={pdfFile}
+          onLoadSuccess={({ numPages }) => { setNumPages(numPages); setPage(1); }}
+          loading={<div style={styles.loading}>Cargando PDF…</div>}
+          error={<div style={styles.loading}>No se pudo cargar el PDF.</div>}
+        >
+          <Page
+            pageNumber={page}
+            scale={scale}
+             renderAnnotationLayer={true}   // ✅ necesario para que los links sean clickeables
+  renderTextLayer={false}   
+            loading={<div style={styles.loading}>Cargando página…</div>}
+            error={<div style={styles.loading}>Error al renderizar.</div>}
+          />
+        </Document>
       </div>
 
       <div style={styles.audioRow}>
         <audio ref={audioRef} controls src={audioUrl} style={{ width: "100%" }} />
         {!soundOn && (
-          <button onClick={enableSound} style={styles.btnSecondary}>
+          <button
+            onClick={async () => {
+              const a = audioRef.current;
+              if (!a) return;
+              a.muted = false;
+              try { await a.play(); setSoundOn(true); } catch {}
+            }}
+            style={styles.btnSecondary}
+          >
             🔊 Activar sonido
           </button>
         )}
       </div>
 
       <div style={styles.actions}>
-        <a href="/material-dl.pdf" style={styles.btn}>Descargar PDF</a>
-        <a href="/material.pdf" target="_blank" rel="noopener noreferrer" style={{ ...styles.btnSecondary, marginLeft: 8 }}>
-          Abrir en pestaña nueva
-        </a>
+        {/* descarga directa sin headers extra si lo importás desde src */}
+        <a href={pdfFile} download="Clase.pdf" style={styles.btn}>Descargar PDF</a>
+        
       </div>
     </div>
   );
@@ -56,8 +95,11 @@ export default function App() {
 const styles = {
   page: { maxWidth: 980, margin: "24px auto", padding: "0 16px", fontFamily: "system-ui, sans-serif" },
   h1: { margin: "0 0 16px" },
-  viewerWrap: { border: "1px solid #e5e7eb", borderRadius: 12, overflow: "hidden" },
-  viewer: { width: "100%", height: "85vh", border: "none" },   // un poco más alto en celu
+  toolbar: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8 },
+  toolbarText: { fontSize: 14, color: "#374151" },
+  btnMini: { padding: "6px 10px", borderRadius: 8, border: "1px solid #d1d5db", background: "#f3f4f6", fontWeight: 700 },
+  viewerWrap: { border: "1px solid #e5e7eb", borderRadius: 12, overflow: "hidden", padding: 8, display: "grid", placeItems: "center" },
+  loading: { padding: 16, color: "#6b7280", fontSize: 14 },
   audioRow: { marginTop: 12, display: "grid", gap: 8 },
   actions: { marginTop: 16 },
   btn: { display: "inline-block", padding: "10px 14px", borderRadius: 10, background: "#111827", color: "#fff", textDecoration: "none", fontWeight: 700 },
