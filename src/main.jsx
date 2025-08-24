@@ -7,10 +7,8 @@ createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* por si alguien entra a / sin que pegue el redirect del edge */}
         <Route path="/" element={<Navigate to="/ver" replace />} />
         <Route path="/ver" element={<App />} />
-        {/* fallback: cualquier ruta → visor */}
         <Route path="*" element={<App />} />
       </Routes>
     </BrowserRouter>
